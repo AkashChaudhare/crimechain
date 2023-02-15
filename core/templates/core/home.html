@@ -1,0 +1,15 @@
+{% extends "core/index.html" %}
+
+{% block content %}
+
+<div>yo this is the home page</div>
+<br><br>
+<h3>search for something</h3>
+<form role="search" action="{% url 'search' %}" method="get">
+    <input class="form-control" name="convict_id" type="search" placeholder="convict id" aria-label="Search">
+    <input class="form-control" name="convict_name" type="search" placeholder="convict name" aria-label="Search">
+    <input class="form-control" name="crime_id" type="search" placeholder="crime id" aria-label="Search">
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock content %}

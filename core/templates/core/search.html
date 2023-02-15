@@ -1,0 +1,23 @@
+{% extends "core/index.html" %}
+
+{% block content %}
+
+<div>yo this is the search page</div>
+<br><br>
+<form role="search" action="{% url 'search' %}" method="get">
+    <input class="form-control" name="convict_id" type="search" placeholder="convict id" aria-label="Search">
+    <input class="form-control" name="convict_name" type="search" placeholder="convict name" aria-label="Search">
+    <input class="form-control" name="crime_id" type="search" placeholder="crime id" aria-label="Search">
+    <button type="submit">Submit</button>
+</form>
+<br><br>
+<h3>search for something</h3>
+
+    {% for convict in convicts %}
+    
+    <div>
+        <h4>{{ convict.name }}</h4>
+        <h6>{{ convict.place_of_birth }}</h6>
+    </div>
+    {% endfor %}
+{% endblock content %}
