@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -12,63 +12,78 @@ class Home(ListView):
     model=Block
     template_name='core/home.html'
 
-class CreateConvict(CreateView):
+class CreateConvict(LoginRequiredMixin, CreateView):
     model=Convict
     fields=['name', 'aliases', 'gender', 'place_of_birth', 'date_of_birth', 'education', 'financial_background']
     success_url=reverse_lazy('home')
     template_name='core/createconvict.html'
 
-class CreateBlock(CreateView):
+class CreateBlock(LoginRequiredMixin,CreateView):
     model=Block
     fields=['perp', 'charges', 'charges_code', 'known_accomplices', 'fir_date', 'conviction_date', 'comments','sentencer', 'sentence',]
     success_url=reverse_lazy('home')
     template_name='core/createblock.html'
 
-class SearchView(ListView):
+class SearchView(LoginRequiredMixin,ListView):
     model=Convict
     template_name='core/search.html'
-    context_object_name='convicts'
+    context_object_name='abc'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)# Call the base implementation first to get a context
-        convict_id=self.request.GET.get("searchstring")
-        convict_name=self.request.GET.get("searchstring")
-        crime_id=self.request.GET.get("searchstring")
+        convict_id=self.request.GET.get("convict_id")
+        convict_name=self.request.GET.get("convict_name")
+        crime_id=self.request.GET.get("crime_id")
 
 
-        context['convict_id'] = self.request.GET.get("convict_id")
-        context['convict_name'] = self.request.GET.get("convict_name")
-        context['crime_id'] = self.request.GET.get("crime_id")
+        context['convict_id'] = convict_id
+        context['convict_name'] = convict_name
+        context['crime_id'] = crime_id
 
-        if convict_name and crime_id:
+        print('convict_id',context['convict_id']) if context['convict_id']!='' else print()
+        print('convict_name',context['convict_name']) if context['convict_name']!='' else print()
+        print('crime_id',context['crime_id']) if context['crime_id']!='' else print()
 
-            q=Block.objects.filter(
-                Q(perp=convict_name) & Q(pk=crime_id)
-            )
-            context['qset']=q
+        if crime_id!='':
+            try:
+                q=get_object_or_404(Block,pk=crime_id)
+                #q=Block.objects.get(Q(pk=crime_id))
+                context['crime']=q
+                print(context['crime'])
+                context['search_hint']=f"Match found for crime id - {crime_id}"
+            except:
+                pass
 
-        if convict_id and crime_id:
+        elif convict_id!='':
+            try:
+                q=Convict.objects.filter(Q(pk=convict_id) )
+                q=get_object_or_404(Convict,pk=convict_id)
+                #q=Block.objects.get(Q(pk=crime_id))
+                context['convict']=q
+                print(context['convict'])
+                context['search_hint']=f"Match found for convict id - {convict_id}"
+            except:
+                pass
 
-            q=Block.objects.filter(
-                Q(perp=convict_name) & Q(pk=crime_id)
-            )
-            context['qset']=q
+        elif convict_name!='':
+            q=Convict.objects.filter(Q(name__icontains=convict_name) | Q(aliases__icontains=convict_name))
+            context['convict_list']=q
+            context['search_hint']=f"Match found for convict name - {convict_name}"
 
-        #if type(context['convict_id'])
+        #if not context['search_hint']:
+            #context['search_hint']="No results found, redefine search"
+
 
         return context
 
-    def get_queryset(self):  # new
-        query=self.request.GET.get("convict_id")
-        convict_id=self.request.GET.get("searchstring")
-        convict_name=self.request.GET.get("searchstring")
-        crime_id=self.request.GET.get("searchstring")
-        
+class BlockDetailView(LoginRequiredMixin,DetailView):
+    model=Block
+    #template_name='core/blockdetailview.html'
 
-        object_list = Convict.objects.filter(
-            Q(pk=query) | Q(name__icontains=query)| Q(aliases__icontains=query)
-        )
-        return object_list
+class ConvictDetailView(LoginRequiredMixin,DetailView):
+    model=Convict
+    #template_name='core/convictdetailview.html'
+    
 
 
 

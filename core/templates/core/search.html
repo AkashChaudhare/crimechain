@@ -13,11 +13,46 @@
 <br><br>
 <h3>search for something</h3>
 
-    {% for convict in convicts %}
-    
-    <div>
-        <h4>{{ convict.name }}</h4>
-        <h6>{{ convict.place_of_birth }}</h6>
-    </div>
-    {% endfor %}
+
+{% if convict %}
+
+<div>
+    <h6>{{ search_hint }}</h6>
+    <h4>
+        <a href="{% url 'convictdetail' convict.id %}">{{ convict.pk }} {{ convict.name }}</a>
+    </h4>
+    <h6>{{ convict.place_of_birth }}</h6>
+    <h6>{{ convict.aliases }}</h6>
+</div>
+{% elif crime %}
+<div>
+    <h6>{{ search_hint }}</h6>
+    <h4>
+        <a href="{% url 'blockdetail' crime.id %}">{{ crime.pk }}</a>
+    </h4>
+    <h6>{{ crime.charges }}</h6>
+    <h6>{{ crime.conviction_date }}</h6>
+    <h6>{{ crime.comments }}</h6>
+</div>
+
+{% elif convict_list %}
+
+{% for convict in convict_list %}
+
+<div>
+    <h6>{{ search_hint }}</h6>
+    <h4>
+        <a href="{% url 'convictdetail' convict.id %}">{{ convict.pk }} {{ convict.name }}</a>
+    </h4>
+    <h6>{{ convict.place_of_birth }}</h6>
+    <h6>{{ convict.aliases }}</h6>
+</div>
+<hr>
+{% endfor %}
+
+{% else %}
+<div>
+    <h4>No results, redefine search</h4>
+</div>
+{% endif %}
 {% endblock content %}

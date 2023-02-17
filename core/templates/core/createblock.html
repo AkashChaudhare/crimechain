@@ -1,4 +1,5 @@
 {% extends "core/index.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div>yo this is the block create page</div>
 <div class="container" style="width: 40%;">
@@ -6,7 +7,7 @@
         {% csrf_token %}
         <fieldset class="form-group" >
             <legend class="border-bottom mb-4">Add a Task</legend>
-            {{ form }}
+            {{ form | crispy}}
         </fieldset>
         <div class="form-group" style="padding: 50px;">
             <button class="btn btn-outline-info" type="submit">Add</button>

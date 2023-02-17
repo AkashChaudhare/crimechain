@@ -4,6 +4,8 @@
 
 <div>yo this is the home page</div>
 <br><br>
+
+{% if user.is_authenticated %}
 <h3>search for something</h3>
 <form role="search" action="{% url 'search' %}" method="get">
     <input class="form-control" name="convict_id" type="search" placeholder="convict id" aria-label="Search">
@@ -11,5 +13,8 @@
     <input class="form-control" name="crime_id" type="search" placeholder="crime id" aria-label="Search">
     <button type="submit">Submit</button>
 </form>
+{% else %}
+<h3>Login to use platform</h3>
+{% endif %}
 
 {% endblock content %}
